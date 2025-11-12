@@ -15,7 +15,9 @@ Para las siguientes matrices, se debe determinar su tipo (identidad, diagonal, s
 
 ### Matriz A
 
-$\begin{pmatrix} 1 & 0 \\ 0 & 1 \end{pmatrix}$
+| 1 | 0 |
+|---|---|
+| 0 | 1 |
 
 * *Clasificación:* Matriz Identidad
 * *Justificación:* Se clasifica como Identidad ya que su diagonal principal se compone únicamente de 1s y el resto de los elementos son 0.
@@ -24,7 +26,10 @@ $\begin{pmatrix} 1 & 0 \\ 0 & 1 \end{pmatrix}$
 
 ### Matriz B
 
-$\begin{pmatrix} 3 & 0 & 0 \\ 0 & -2 & 0 \\ 0 & 0 & 5 \end{pmatrix}$
+| 3 | 0 | 0 |
+|---|---|---|
+| 0 | -2 | 0 |
+| 0 | 0 | 5 |
 
 * *Clasificación:* Matriz Diagonal
 * *Justificación:* Es Diagonal, dado que todos los elementos que están fuera de la diagonal principal son nulos (0).
@@ -33,7 +38,10 @@ $\begin{pmatrix} 3 & 0 & 0 \\ 0 & -2 & 0 \\ 0 & 0 & 5 \end{pmatrix}$
 
 ### Matriz C
 
-$\begin{pmatrix} 2 & 1 & 4 \\ 1 & 3 & 5 \\ 4 & 5 & 6 \end{pmatrix}$
+| 2 | 1 | 4 |
+|---|---|---|
+| 1 | 3 | 5 |
+| 4 | 5 | 6 |
 
 * *Clasificación:* Matriz Simétrica
 * *Justificación:* Es una matriz Simétrica. Cumple con la condición de que es cuadrada y el elemento aᵢⱼ es igual a aⱼᵢ para todos sus índices (ej. a₁₃ = 4 y a₃₁ = 4).
@@ -42,7 +50,10 @@ $\begin{pmatrix} 2 & 1 & 4 \\ 1 & 3 & 5 \\ 4 & 5 & 6 \end{pmatrix}$
 
 ### Matriz D
 
-$\begin{pmatrix} 1 & 2 & 3 \\ 0 & 4 & 5 \\ 0 & 0 & 6 \end{pmatrix}$
+| 1 | 2 | 3 |
+|---|---|---|
+| 0 | 4 | 5 |
+| 0 | 0 | 6 |
 
 * *Clasificación:* Matriz Triangular Superior
 * *Justificación:* Se trata de una matriz Triangular Superior, ya que todas las entradas (elementos) que están por debajo de la diagonal principal son cero.
@@ -54,10 +65,16 @@ $\begin{pmatrix} 1 & 2 & 3 \\ 0 & 4 & 5 \\ 0 & 0 & 6 \end{pmatrix}$
 Considerando las siguientes matrices:
 
 *Matriz A:*
-$\begin{pmatrix} 2 & -1 \\ 3 & 4 \end{pmatrix}$
+
+| 2 | -1 |
+|---|----|
+| 3 | 4 |
 
 *Matriz B:*
-$\begin{pmatrix} 5 & 2 \\ -1 & 3 \end{pmatrix}$
+
+| 5 | 2 |
+|---|---|
+| -1 | 3 |
 
 Se realizarán las operaciones: *A + B, **2A - B, **A × B, **B × A, y **Aᵗ*.
 
@@ -73,7 +90,9 @@ Se realizarán las operaciones: *A + B, **2A - B, **A × B, **B × A, y **Aᵗ*.
 
 *Resultado:*
 
-$\begin{pmatrix} 7 & 1 \\ 2 & 7 \end{pmatrix}$
+| 7 | 1 |
+|---|---|
+| 2 | 7 |
 
 *Proceso:* El cálculo se hace sumando los elementos que ocupan la misma posición (misma fila y columna) en ambas matrices.
 
@@ -82,7 +101,10 @@ $\begin{pmatrix} 7 & 1 \\ 2 & 7 \end{pmatrix}$
 ### 2.2. Multiplicación Escalar y Resta (2A - B)
 
 *Paso 1 (2A):*
-$\begin{pmatrix} 4 & -2 \\ 6 & 8 \end{pmatrix}$
+
+| 4 | -2 |
+|---|----|
+| 6 | 8 |
 
 *Paso 2 (2A - B):*
 
@@ -92,7 +114,9 @@ $\begin{pmatrix} 4 & -2 \\ 6 & 8 \end{pmatrix}$
 
 *Resultado:*
 
-$\begin{pmatrix} -1 & -4 \\ 7 & 5 \end{pmatrix}$
+| -1 | -4 |
+|----|----|
+| 7 | 5 |
 
 *Proceso:* Primero, se multiplica la Matriz A por el escalar 2. Luego, se resta la Matriz B al resultado, elemento por elemento.
 
@@ -108,7 +132,9 @@ $\begin{pmatrix} -1 & -4 \\ 7 & 5 \end{pmatrix}$
 
 *Resultado:*
 
-$\begin{pmatrix} 11 & 1 \\ 11 & 18 \end{pmatrix}$
+| 11 | 1 |
+|----|---|
+| 11 | 18 |
 
 *Proceso:* Se multiplica cada fila de la Matriz A por cada columna de la Matriz B, sumando los productos resultantes de cada posición.
 
@@ -124,7 +150,9 @@ $\begin{pmatrix} 11 & 1 \\ 11 & 18 \end{pmatrix}$
 
 *Resultado:*
 
-$\begin{pmatrix} 16 & 3 \\ 7 & 13 \end{pmatrix}$
+| 16 | 3 |
+|----|---|
+| 7 | 13 |
 
 *Proceso:* Se repite el procedimiento anterior, pero multiplicando las filas de B por las columnas de A. El resultado demuestra que la multiplicación de matrices *no es conmutativa* (A × B ≠ B × A).
 
@@ -136,7 +164,9 @@ $\begin{pmatrix} 16 & 3 \\ 7 & 13 \end{pmatrix}$
 
 *Resultado:*
 
-$\begin{pmatrix} 2 & 3 \\ -1 & 4 \end{pmatrix}$
+| 2 | 3 |
+|---|---|
+| -1 | 4 |
 
 *Proceso:* Para obtener la transpuesta, las filas de la matriz original (A) se convierten en las columnas de la nueva matriz (Aᵗ).
 
@@ -147,13 +177,22 @@ $\begin{pmatrix} 2 & 3 \\ -1 & 4 \end{pmatrix}$
 Se utilizarán las siguientes matrices:
 
 *Matriz A:*
-$\begin{pmatrix} 1 & 2 \\ 3 & 4 \end{pmatrix}$
+
+| 1 | 2 |
+|---|---|
+| 3 | 4 |
 
 *Matriz B:*
-$\begin{pmatrix} 2 & 0 \\ 1 & 3 \end{pmatrix}$
+
+| 2 | 0 |
+|---|---|
+| 1 | 3 |
 
 *Matriz C:*
-$\begin{pmatrix} 1 & 1 \\ 0 & 2 \end{pmatrix}$
+
+| 1 | 1 |
+|---|---|
+| 0 | 2 |
 
 El objetivo es comprobar la propiedad asociativa: *(A × B) × C = A × (B × C)*.
 
@@ -169,7 +208,9 @@ El objetivo es comprobar la propiedad asociativa: *(A × B) × C = A × (B × C)
 
 *Resultado (A × B):*
 
-$\begin{pmatrix} 4 & 6 \\ 10 & 12 \end{pmatrix}$
+| 4 | 6 |
+|---|---|
+| 10 | 12 |
 
 ---
 
@@ -183,7 +224,9 @@ $\begin{pmatrix} 4 & 6 \\ 10 & 12 \end{pmatrix}$
 
 *Resultado Final (Izquierdo):*
 
-$\begin{pmatrix} 4 & 16 \\ 10 & 34 \end{pmatrix}$
+| 4 | 16 |
+|---|----|
+| 10 | 34 |
 
 ---
 
@@ -197,7 +240,9 @@ $\begin{pmatrix} 4 & 16 \\ 10 & 34 \end{pmatrix}$
 
 *Resultado (B × C):*
 
-$\begin{pmatrix} 2 & 2 \\ 1 & 7 \end{pmatrix}$
+| 2 | 2 |
+|---|---|
+| 1 | 7 |
 
 ---
 
@@ -211,7 +256,9 @@ $\begin{pmatrix} 2 & 2 \\ 1 & 7 \end{pmatrix}$
 
 *Resultado Final (Derecho):*
 
-$\begin{pmatrix} 4 & 16 \\ 10 & 34 \end{pmatrix}$
+| 4 | 16 |
+|---|----|
+| 10 | 34 |
 
 ---
 
@@ -219,25 +266,10 @@ $\begin{pmatrix} 4 & 16 \\ 10 & 34 \end{pmatrix}$
 
 *(A × B) × C = A × (B × C)*
 
-$\begin{pmatrix} 4 & 16 \\ 10 & 34 \end{pmatrix} = \begin{pmatrix} 4 & 16 \\ 10 & 34 \end{pmatrix}$
+| 4 | 16 |
+|---|----|
+| 10 | 34 |
 
 ✅ *Comprobación:* Se confirma la igualdad. Esto demuestra que la *multiplicación de matrices cumple con la propiedad asociativa*.
 
 ---
-...
-
-
-
-
-
-
-
-
----
-
-
-
-
-
-
-
