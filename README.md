@@ -273,3 +273,9 @@ El objetivo es comprobar la propiedad asociativa: *(A × B) × C = A × (B × C)
 ✅ *Comprobación:* Se confirma la igualdad. Esto demuestra que la *multiplicación de matrices cumple con la propiedad asociativa*.
 
 ---
+
+
+# Imagenes: 
+<img width="1274" height="1205" alt="image" src="https://github.com/user-attachments/assets/0dee60ce-4ee2-4f7e-9dd5-440ed395dd9f" />
+
+ 
