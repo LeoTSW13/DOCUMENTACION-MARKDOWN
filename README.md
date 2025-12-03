@@ -1,7 +1,7 @@
 # Tecnológico de Software
 ## Materia: Fundamentos de álgebra
 ## Alumno: 1A Pablo Leonardo Noh Vidal 
-## Actividad \#16  
+## Actividad \#18 
 ---
 # Actividad: Análisis y Operaciones con Matrices
 
