@@ -1,0 +1,635 @@
+// ============================================
+// EDITOR DE IMÁGENES CON ÁLGEBRA MATRICIAL
+// ============================================ 
+// Nombre del estudiante: Pablo Leonardo Noh Vidal
+// Fecha: 16/11/2025
+// Grupo: 1A
+
+const { PNG } = require('pngjs');
+const fs = require('fs');
+const path = require('path');
+
+// Importar funciones auxiliares (puedes usarlas)
+const {
+  crearMatrizVacia,
+  validarMatriz,
+  obtenerDimensiones,
+  limitarValorColor,
+  crearPixel,
+  copiarMatriz,
+  asegurarDirectorio
+} = require('./utilidades');
+
+// Importar operaciones matriciales (puedes usarlas)
+const {
+  sumarMatrices,
+  restarMatrices,
+  multiplicarPorEscalar,
+  multiplicarMatrices,
+  transponerMatriz
+} = require('./matriz');
+
+// ============================================
+// SECCIÓN 1: FUNDAMENTOS (20 puntos)
+// Conversión entre imágenes y matrices
+// ============================================
+
+/**
+ * Ejercicio 1.1: Cargar imagen PNG y convertir a matriz de píxeles (5 puntos)
+ * 
+ * Una imagen es una matriz donde cada elemento es un pixel con valores RGBA.
+ * Debes leer el archivo PNG y crear una matriz donde:
+ * - Cada fila representa una fila de píxeles de la imagen
+ * - Cada elemento es un objeto: {r: 0-255, g: 0-255, b: 0-255, a: 0-255}
+ * 
+ * @param {string} rutaImagen - Ruta del archivo PNG
+ * @returns {Array<Array<Object>>} - Matriz de píxeles
+ * 
+ * Pistas:
+ * - Usa PNG.sync.read() para leer la imagen
+ * - png.width y png.height te dan las dimensiones
+ * - png.data es un Buffer con formato [R,G,B,A, R,G,B,A, ...]
+ * - El índice en el buffer para el pixel (x,y) es: idx = (width * y + x) * 4
+ * 
+ * @example
+ * const matriz = imagenAMatriz('imagenes/entrada/test_pequeña.png');
+ * // matriz[0][0] = {r: 0, g: 0, b: 128, a: 255}
+ */
+function imagenAMatriz(rutaImagen) {
+  // TODO: Implementar la conversión de PNG a matriz
+  
+  const buffer = fs.readFileSync(rutaImagen);
+  const png = PNG.sync.read(buffer);
+  const matriz = [];
+
+  for(let y = 0; y < png.height; y++) {
+    const fila = [];
+    for (let x = 0; x < png.width; x++) {
+      const idx = (png.width * y + x) << 2;
+      const pixel = {
+        r: png.data[idx],
+        g: png.data[idx + 1],
+        b: png.data[idx + 2],
+        a: png.data[idx + 3]
+      };
+      fila.push(pixel);
+    }
+    matriz.push(fila);
+  }
+  
+  return matriz;
+}
+
+/**
+ * Ejercicio 1.2: Convertir matriz de píxeles a imagen PNG (5 puntos)
+ * 
+ * Proceso inverso: tomar una matriz de píxeles y guardarla como PNG.
+ * 
+ * @param {Array<Array<Object>>} matriz - Matriz de píxeles {r,g,b,a}
+ * @param {string} rutaSalida - Ruta donde guardar el PNG
+ * 
+ * Pistas:
+ * - Usa new PNG({width, height}) para crear la imagen
+ * - Recorre la matriz y llena png.data con los valores
+ * - Usa PNG.sync.write(png) para generar el buffer
+ * - Usa fs.writeFileSync() para guardar el archivo
+ * 
+ * @example
+ * const matriz = imagenAMatriz('entrada.png');
+ * matrizAImagen(matriz, 'imagenes/salida/copia.png');
+ */
+function matrizAImagen(matriz, rutaSalida) {
+  // TODO: Implementar la conversión de matriz a PNG
+  
+  validarMatriz(matriz);
+
+  const dims = obtenerDimensiones(matriz);
+  const png = new PNG({
+    width: dims.columnas,
+    height: dims.filas
+  });
+
+  for (let y = 0; y < dims.filas; y++) {
+    for (let x = 0; x < dims.columnas; x++) {
+      const idx = (dims.columnas * y + x) << 2; 
+      const pixel = matriz[y][x]; 
+
+      png.data[idx]     = limitarValorColor(pixel.r);
+      png.data[idx + 1] = limitarValorColor(pixel.g);
+      png.data[idx + 2] = limitarValorColor(pixel.b);
+      png.data[idx + 3] = limitarValorColor(pixel.a);
+    }
+  }
+  asegurarDirectorio(path.dirname(rutaSalida));
+  const buffer = PNG.sync.write(png);
+  fs.writeFileSync(rutaSalida, buffer);
+}
+
+/**
+ * Ejercicio 1.3: Obtener un canal específico de color (5 puntos)
+ * 
+ * Extrae solo un canal (R, G, o B) de la imagen y crea una imagen en escala de grises
+ * donde ese canal es el valor de gris.
+ * 
+ * @param {Array<Array<Object>>} matriz - Matriz de píxeles
+ * @param {string} canal - 'r', 'g', o 'b'
+ * @returns {Array<Array<Object>>} - Matriz con solo ese canal
+ * 
+ * @example
+ * const matriz = imagenAMatriz('imagen.png');
+ * const soloRojo = obtenerCanal(matriz, 'r');
+ * // Si un pixel era {r:200, g:100, b:50, a:255}
+ * // Ahora será {r:200, g:200, b:200, a:255} (gris)
+ */
+function obtenerCanal(matriz, canal) {
+  // TODO: Implementar extracción de canal
+    if (!['r', 'g', 'b'].includes(canal)) {
+    throw new Error("Canal inválido. Debe ser 'r', 'g' o 'b'.");
+  }
+
+  // Validar que la matriz tenga forma correcta (opcional si ya lo haces en otro sitio)
+  validarMatriz(matriz);
+
+  // Crear matriz resultado copiando la estructura (preserva dimensiones)
+  const resultado = copiarMatriz(matriz);
+
+  for (let i = 0; i < matriz.length; i++) {
+    for (let j = 0; j < matriz[i].length; j++) {
+      const px = matriz[i][j];
+
+      // Tomar el valor del canal pedido, asegurarlo y redondear
+      const valor = Math.round(px[canal]);
+      const vLimitado = limitarValorColor(valor);
+
+      // Reemplazar el pixel en la matriz resultado por el gris correspondiente
+      resultado[i][j] = {
+        r: vLimitado,
+        g: vLimitado,
+        b: vLimitado,
+        a: ('a' in px) ? limitarValorColor(px.a) : 255
+      };
+    }
+  }
+
+  return resultado;
+}
+
+/**
+ * Ejercicio 1.4: Obtener dimensiones de una imagen (5 puntos)
+ * 
+ * @param {string} rutaImagen - Ruta del archivo PNG
+ * @returns {Object} - {ancho, alto, totalPixeles}
+ * 
+ * @example
+ * const dims = obtenerDimensionesImagen('test.png');
+ * // {ancho: 100, alto: 100, totalPixeles: 10000}
+ */
+function obtenerDimensionesImagen(rutaImagen) {
+  // TODO: Obtener dimensiones sin cargar toda la imagen en memoria
+  
+  const buffer = fs.readFileSync(rutaImagen);
+  const png = PNG.sync.read(buffer);
+
+  return {
+    ancho: png.width,
+    alto: png.height,
+    totalPixeles: png.width * png.height
+  };
+}
+
+// ============================================
+// SECCIÓN 2: OPERACIONES BÁSICAS (25 puntos)
+// Aplicar álgebra matricial a píxeles
+// ============================================
+
+/**
+ * Ejercicio 2.1: Ajustar brillo (8 puntos)
+ * 
+ * El brillo se ajusta multiplicando cada canal RGB por un factor.
+ * Esto es una MULTIPLICACIÓN ESCALAR aplicada a cada canal.
+ * 
+ * @param {Array<Array<Object>>} matriz - Matriz de píxeles
+ * @param {number} factor - Factor de brillo (0.5 = más oscuro, 2.0 = más claro)
+ * @returns {Array<Array<Object>>} - Matriz con brillo ajustado
+ * 
+ * Concepto matemático:
+ * Si factor = 1.5, entonces:
+ * R_nuevo = R_original * 1.5
+ * G_nuevo = G_original * 1.5
+ * B_nuevo = B_original * 1.5
+ * 
+ * @example
+ * const brillante = ajustarBrillo(matriz, 1.5); // 50% más claro
+ * const oscuro = ajustarBrillo(matriz, 0.5);    // 50% más oscuro
+ */
+function ajustarBrillo(matriz, factor) {
+  // TODO: Implementar ajuste de brillo
+  
+  const resultado = copiarMatriz(matriz);
+  for (let i = 0; i < resultado.length; i++) {
+    for (let j = 0; j < resultado[i].length; j++) {
+      resultado[i][j].r = limitarValorColor(Math.round(resultado[i][j].r * factor));
+      resultado[i][j].g = limitarValorColor(Math.round(resultado[i][j].g * factor));
+      resultado[i][j].b = limitarValorColor(Math.round(resultado[i][j].b * factor));
+
+    }
+  }
+  
+  return resultado;
+}
+
+/**
+ * Ejercicio 2.2: Invertir colores (8 puntos)
+ * 
+ * Invierte los colores usando la operación: nuevo = 255 - original
+ * 
+ * @param {Array<Array<Object>>} matriz - Matriz de píxeles
+ * @returns {Array<Array<Object>>} - Matriz con colores invertidos
+ * 
+ * Concepto matemático:
+ * R_nuevo = 255 - R_original
+ * G_nuevo = 255 - G_original
+ * B_nuevo = 255 - B_original
+ * 
+ * @example
+ * const negativo = invertirColores(matriz);
+ * // Blanco (255,255,255) → Negro (0,0,0)
+ * // Rojo (255,0,0) → Cian (0,255,255)
+ */
+function invertirColores(matriz) {
+  // TODO: Implementar inversión de colores
+  
+  const resultado = copiarMatriz(matriz);
+
+  for (let i = 0; i < resultado.length; i++) {
+    for (let j = 0; j < resultado[i].length; j++) {
+      const px = matriz[i][j];
+      resultado[i][j] = {
+        r: 255 - px.r,
+        g: 255 - px.g,
+        b: 255 - px.b,
+        a: px.a
+      };
+    }
+  }
+
+  return resultado;
+}
+
+
+/**
+ * Ejercicio 2.3: Convertir a escala de grises (9 puntos)
+ * 
+ * Convierte la imagen a escala de grises usando el promedio ponderado:
+ * Gris = 0.299*R + 0.587*G + 0.114*B
+ * 
+ * Estos pesos reflejan la sensibilidad del ojo humano a cada color.
+ * 
+ * @param {Array<Array<Object>>} matriz - Matriz de píxeles
+ * @returns {Array<Array<Object>>} - Matriz en escala de grises
+ * 
+ * @example
+ * const grises = convertirEscalaGrises(matriz);
+ */
+function convertirEscalaGrises(matriz) {
+  // TODO: Implementar conversión a escala de grises
+  
+const resultado = copiarMatriz(matriz);
+
+  for (let i = 0; i < resultado.length; i++) {
+    for (let j = 0; j < resultado[i].length; j++) {
+      const px = matriz[i][j];
+      const gris = limitarValorColor(
+        0.299 * px.r + 0.587 * px.g + 0.114 * px.b
+      );
+
+      resultado[i][j] = {
+        r: gris,
+        g: gris,
+        b: gris,
+        a: px.a
+      };
+    }
+  }
+
+  return resultado;
+}
+
+// ============================================
+// SECCIÓN 3: TRANSFORMACIONES GEOMÉTRICAS (30 puntos)
+// Aplicar operaciones matriciales para transformar
+// ============================================
+
+/**
+ * Ejercicio 3.1: Voltear horizontal (espejo) (10 puntos)
+ * 
+ * Voltea la imagen horizontalmente (efecto espejo).
+ * Cada fila se invierte: [1,2,3] → [3,2,1]
+ * 
+ * @param {Array<Array<Object>>} matriz - Matriz de píxeles
+ * @returns {Array<Array<Object>>} - Matriz volteada horizontalmente
+ * 
+ * Concepto matemático:
+ * pixel[i][j] → pixel[i][ancho - 1 - j]
+ * 
+ * @example
+ * const espejo = voltearHorizontal(matriz);
+ */
+function voltearHorizontal(matriz) {
+  // TODO: Implementar volteo horizontal
+  
+validarMatriz(matriz);
+
+  const resultado = copiarMatriz(matriz);
+
+  for (let i = 0; i < resultado.length; i++) {
+    resultado[i] = resultado[i].slice().reverse(); // invierte cada fila
+  }
+
+  return resultado;
+}
+/**
+ * Ejercicio 3.2: Voltear vertical (10 puntos)
+ * 
+ * Voltea la imagen verticalmente (de arriba hacia abajo).
+ * El orden de las filas se invierte.
+ * 
+ * @param {Array<Array<Object>>} matriz - Matriz de píxeles
+ * @returns {Array<Array<Object>>} - Matriz volteada verticalmente
+ * 
+ * Concepto matemático:
+ * pixel[i][j] → pixel[alto - 1 - i][j]
+ * 
+ * @example
+ * const invertido = voltearVertical(matriz);
+ */
+function voltearVertical(matriz) {
+  // TODO: Implementar volteo vertical
+  // Validar entrada (lanza error si la matriz no tiene formato correcto)
+  validarMatriz(matriz);
+
+  // Caso vacío
+  if (!Array.isArray(matriz) || matriz.length === 0) return [];
+
+  const alto = matriz.length;
+  const ancho = matriz[0].length;
+
+  // Construir resultado sin mutar la original.
+  // Nos aseguramos de copiar cada pixel por valor para evitar aliasing.
+  const resultado = new Array(alto);
+
+  for (let i = 0; i < alto; i++) {
+    // fila índice desde abajo hacia arriba
+    const filaOrigen = matriz[alto - 1 - i];
+
+    // Comprobar que la fila tiene la longitud esperada (matriz rectangular)
+    if (!Array.isArray(filaOrigen) || filaOrigen.length !== ancho) {
+      throw new Error('Matriz no rectangular en voltearVertical');
+    }
+
+    // Copiar pixel por pixel (copia por valor)
+    const filaCopiada = filaOrigen.map(px => ({
+      r: limitarValorColor(px.r),
+      g: limitarValorColor(px.g),
+      b: limitarValorColor(px.b),
+      a: ('a' in px) ? limitarValorColor(px.a) : 255
+    }));
+
+    resultado[i] = filaCopiada;
+  }
+
+  return resultado;
+}
+
+
+
+/**
+ * Ejercicio 3.3: Rotar 90 grados en sentido horario (10 puntos)
+ * 
+ * Rota la imagen 90° en sentido horario.
+ * Esto se logra con: TRANSPONER + VOLTEAR HORIZONTAL
+ * 
+ * @param {Array<Array<Object>>} matriz - Matriz de píxeles
+ * @returns {Array<Array<Object>>} - Matriz rotada 90°
+ * 
+ * Concepto matemático:
+ * 1. Transponer: pixel[i][j] → pixel[j][i]
+ * 2. Voltear horizontal: invertir cada fila
+ * 
+ * Puedes usar transponerMatriz() de matriz.js (¡pero cuidado! trabaja con números, 
+ * no con objetos pixel)
+ * 
+ * @example
+ * const rotada = rotar90Grados(matriz);
+ */
+function rotar90Grados(matriz) {
+  // TODO: Implementar rotación de 90 grados
+  
+  validarMatriz(matriz);
+
+  const alto = matriz.length;
+  const ancho = matriz[0].length;
+
+  // Crear nueva matriz rotada (ancho x alto)
+  const rotada = [];
+
+  for (let x = 0; x < ancho; x++) {
+    const nuevaFila = [];
+
+    for (let y = alto - 1; y >= 0; y--) {
+      nuevaFila.push({ ...matriz[y][x] });
+    }
+
+    rotada.push(nuevaFila);
+  }
+
+  return rotada;
+}
+
+
+// ============================================
+// SECCIÓN 4: FILTROS AVANZADOS (25 puntos)
+// Operaciones más complejas
+// ============================================
+
+/**
+ * Ejercicio 4.1: Mezclar dos imágenes (8 puntos)
+ * 
+ * Mezcla dos imágenes usando un factor de mezcla.
+ * resultado = imagen1 * (1 - factor) + imagen2 * factor
+ * 
+ * Esto es una COMBINACIÓN LINEAL de matrices.
+ * 
+ * @param {Array<Array<Object>>} matriz1 - Primera imagen
+ * @param {Array<Array<Object>>} matriz2 - Segunda imagen
+ * @param {number} factor - Factor de mezcla (0.0 a 1.0)
+ *                          0.0 = solo imagen1
+ *                          0.5 = 50% de cada una
+ *                          1.0 = solo imagen2
+ * @returns {Array<Array<Object>>} - Imagen mezclada
+ * 
+ * @example
+ * const mezcla = mezclarImagenes(imagen1, imagen2, 0.5); // 50/50
+ */
+function mezclarImagenes(matriz1, matriz2, factor) {
+  // TODO: Implementar mezcla de imágenes
+  
+validarMatriz(matriz1);
+  validarMatriz(matriz2);
+
+  const dims1 = obtenerDimensionesImagen(matriz1);
+  const dims2 = obtenerDimensionesImagen(matriz2);
+
+  if (dims1.filas !== dims2.filas || dims1.columnas !== dims2.columnas) {
+    throw new Error("Las imágenes deben tener el mismo tamaño");
+  }
+
+  const resultado = copiarMatriz(matriz1);
+
+  for (let i = 0; i < resultado.length; i++) {
+    for (let j = 0; j < resultado[i].length; j++) {
+      const p1 = matriz1[i][j];
+      const p2 = matriz2[i][j];
+
+      resultado[i][j] = {
+        r: limitarValorColor(Math.floor(p1.r * (1 - factor) + p2.r * factor)),
+        g: limitarValorColor(Math.floor(p1.g * (1 - factor) + p2.g * factor)),
+        b: limitarValorColor(Math.floor(p1.b * (1 - factor) + p2.b * factor)),
+        a: limitarValorColor(Math.floor(p1.a * (1 - factor) + p2.a * factor)),
+      };
+    }
+  }
+
+  return resultado;
+}
+
+/**
+ * Ejercicio 4.2: Filtro Sepia (9 puntos)
+ * 
+ * Aplica el efecto sepia (tono vintage/antiguo).
+ * Usa la siguiente transformación matricial:
+ * 
+ * R_nuevo = 0.393*R + 0.769*G + 0.189*B
+ * G_nuevo = 0.349*R + 0.686*G + 0.168*B
+ * B_nuevo = 0.272*R + 0.534*G + 0.131*B
+ * 
+ * @param {Array<Array<Object>>} matriz - Matriz de píxeles
+ * @returns {Array<Array<Object>>} - Imagen con efecto sepia
+ * 
+ * @example
+ * const vintage = aplicarSepia(matriz);
+ */
+function aplicarSepia(matriz) {
+  // TODO: Implementar filtro sepia
+  
+  validarMatriz(matriz);
+
+  const resultado = copiarMatriz(matriz);
+
+  for (let i = 0; i < resultado.length; i++) {
+    for (let j = 0; j < resultado[i].length; j++) {
+      const px = matriz[i][j];
+
+      const r = px.r;
+      const g = px.g;
+      const b = px.b;
+
+      const rn = limitarValorColor(Math.floor(0.393 * r + 0.769 * g + 0.189 * b));
+      const gn = limitarValorColor(Math.floor(0.349 * r + 0.686 * g + 0.168 * b));
+      const bn = limitarValorColor(Math.floor(0.272 * r + 0.534 * g + 0.131 * b));
+
+      resultado[i][j] = {
+        r: rn,
+        g: gn,
+        b: bn,
+        a: px.a
+      };
+    }
+  }
+
+  return resultado;
+}
+
+/**
+ * Ejercicio 4.3: Detectar bordes (simplificado) (8 puntos)
+ * 
+ * Detecta bordes comparando cada pixel con sus vecinos.
+ * Si la diferencia es grande, hay un borde.
+ * 
+ * Este es un operador Sobel simplificado.
+ * 
+ * @param {Array<Array<Object>>} matriz - Matriz de píxeles
+ * @param {number} umbral - Umbral de detección (0-255), default: 50
+ * @returns {Array<Array<Object>>} - Imagen de bordes (blanco y negro)
+ * 
+ * Algoritmo simplificado:
+ * 1. Convertir a escala de grises
+ * 2. Para cada pixel, calcular diferencia con vecinos
+ * 3. Si diferencia > umbral, es borde (blanco), sino negro
+ * 
+ * @example
+ * const bordes = detectarBordes(matriz, 50);
+ */
+function detectarBordes(matriz, umbral = 50) {
+  // TODO: Implementar detección de bordes
+  
+  validarMatriz(matriz);
+
+  // 1. Primero escala de grises
+  const grises = convertirEscalaGrises(matriz);
+
+  const alto = grises.length;
+  const ancho = grises[0].length;
+
+  // 2. Crear matriz resultado en negro
+  const resultado = copiarMatriz(grises);
+
+  for (let i = 0; i < resultado.length; i++) {
+    for (let j = 0; j < resultado[i].length; j++) {
+      resultado[i][j] = { r: 0, g: 0, b: 0, a: 255 };
+    }
+  }
+
+  // 3. Comparación simple con vecino derecho e inferior
+  for (let y = 0; y < alto - 1; y++) {
+    for (let x = 0; x < ancho - 1; x++) {
+      const p = grises[y][x].r;
+      const derecha = grises[y][x + 1].r;
+      const abajo = grises[y + 1][x].r;
+
+      const diff = Math.max(Math.abs(p - derecha), Math.abs(p - abajo));
+
+      if (diff > umbral) {
+        resultado[y][x] = { r: 255, g: 255, b: 255, a: 255 }; // borde blanco
+      }
+    }
+  }
+
+  return resultado;
+}
+
+// ============================================
+// NO MODIFICAR - Exportación de funciones
+// ============================================
+module.exports = {
+  // Sección 1: Fundamentos
+  imagenAMatriz,
+  matrizAImagen,
+  obtenerCanal,
+  obtenerDimensionesImagen,
+  
+  // Sección 2: Operaciones Básicas
+  ajustarBrillo,
+  invertirColores,
+  convertirEscalaGrises,
+  
+  // Sección 3: Transformaciones
+  voltearHorizontal,
+  voltearVertical,
+  rotar90Grados,
+  
+  // Sección 4: Filtros Avanzados
+  mezclarImagenes,
+  aplicarSepia,
+  detectarBordes
+};
