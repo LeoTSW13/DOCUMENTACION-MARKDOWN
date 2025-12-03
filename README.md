@@ -279,3 +279,13 @@ El objetivo es comprobar la propiedad asociativa: *(A × B) × C = A × (B × C)
 <img width="1274" height="1205" alt="image" src="https://github.com/user-attachments/assets/0dee60ce-4ee2-4f7e-9dd5-440ed395dd9f" />
 
  
+<img width="1280" height="1247" alt="image" src="https://github.com/user-attachments/assets/92bd5bf2-b8d5-4998-9d7a-5905c3b17177" />
+
+<img width="1280" height="1027" alt="image" src="https://github.com/user-attachments/assets/54b78d0d-c51b-4914-9dc6-4b01854f0a7c" />
+
+<img width="1280" height="1018" alt="image" src="https://github.com/user-attachments/assets/8b3be290-42d3-4cd5-a555-68c9660ff672" />
+
+<img width="1280" height="1022" alt="image" src="https://github.com/user-attachments/assets/6d23bc88-24aa-4f38-9d36-d6cf87425380" />
+
+
+
